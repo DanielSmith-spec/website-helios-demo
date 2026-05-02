@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giới Thiệu - Helios Talent TCN</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;500;600&display=swap');
+
+        :root {
+            --brand-red: #ff3333;
+            --brand-pink: #ff1493;
+            --brand-yellow: #ffcc00;
+        }
+
+        body {
+            background-color: #050505;
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4, .font-display { 
+            font-family: 'Anton', sans-serif; 
+            letter-spacing: 0.03em;
+        }
+
+        .text-brand-gradient {
+            background: linear-gradient(90deg, var(--brand-red), var(--brand-pink), var(--brand-yellow));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        #particle-canvas {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -1; opacity: 0.5; /* Giảm mờ nền đi một chút ở trang phụ */
+        }
+
+        /* Menu Styles */
+        .menu-link {
+            color: #888888;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            transform-origin: left center;
+        }
+        .menu-link:hover {
+            color: #ffffff;
+            transform: translateY(-3px) scale(1.02);
+            text-shadow: 0 5px 15px rgba(255, 255, 255, 0.2), 0 0 20px var(--brand-pink);
+        }
+        .menu-link::before {
+            content: ''; position: absolute; left: -20px; top: 50%; transform: translateY(-50%);
+            width: 4px; height: 0; background: var(--brand-pink); transition: height 0.3s ease, box-shadow 0.3s ease; border-radius: 2px;
+        }
+        .menu-link:hover::before { height: 100%; box-shadow: 0 0 10px var(--brand-pink); }
+
+        /* Slider Custom Styles */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-pink-500 selection:text-white">
+
+    <!-- Canvas Background -->
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- Menu Overlay -->
+    <div id="menu-backdrop" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[54] opacity-0 pointer-events-none transition-opacity duration-500"></div>
+    <nav id="nav-menu" class="fixed top-0 right-0 h-screen w-[85vw] max-w-md bg-[#0a0a0a]/95 backdrop-blur-xl z-[55] flex flex-col justify-center px-8 sm:px-12 transform translate-x-full transition-transform duration-500 ease-out border-l border-white/10 shadow-2xl">
+        <div class="font-mono text-xs text-gray-500 uppercase tracking-widest mb-12 border-b border-gray-800 pb-4 w-full">Sơ đồ trạm</div>
+        <ul class="flex flex-col items-start gap-6 md:gap-8 w-full">
+            <li><a href="index.html" class="menu-link font-display text-xl text-gray-500 uppercase tracking-widest inline-block mb-4">← Về Trang Chủ</a></li>
+            <li><a href="gioi-thieu.html" class="menu-link font-display text-2xl md:text-4xl uppercase tracking-widest font-bold inline-block text-white">Giới thiệu</a></li>
+            <li><a href="linh-vuc-hoat-dong.html" class="menu-link font-display text-2xl md:text-4xl uppercase tracking-widest font-bold inline-block">Lĩnh vực hoạt động</a></li>
+            <li><a href="blog.html" class="menu-link font-display text-2xl md:text-4xl uppercase tracking-widest font-bold inline-block">Blog</a></li>
+            <li><a href="tin-tuc-su-kien.html" class="menu-link font-display text-2xl md:text-4xl uppercase tracking-widest font-bold inline-block">Tin tức sự kiện</a></li>
+            <li><a href="lien-he.html" class="menu-link font-display text-2xl md:text-4xl uppercase tracking-widest font-bold inline-block">Liên hệ</a></li>
+            <li><a href="tuyen-dung.html" class="menu-link font-display text-2xl md:text-4xl uppercase tracking-widest font-bold inline-block">Tuyển dụng</a></li>
+        </ul>
+    </nav>
+
+    <!-- Header -->
+    <header class="fixed top-0 left-0 w-full p-6 flex justify-between items-center text-xs tracking-widest font-mono uppercase bg-gradient-to-b from-black/90 to-transparent z-[50]">
+        <a href="index.html" class="block">
+            <div class="text-xl font-bold font-display tracking-widest text-brand-gradient">HELIOS TALENT TCN</div>
+        </a>
+        <button id="menu-toggle" class="text-white hover:text-pink-500 transition-colors flex flex-col justify-center items-center w-10 h-10 gap-1.5 z-[60]">
+            <span class="w-8 h-0.5 bg-current transition-all duration-300" id="line-1"></span>
+            <span class="w-8 h-0.5 bg-current transition-all duration-300" id="line-2"></span>
+            <span class="w-8 h-0.5 bg-current transition-all duration-300" id="line-3"></span>
+        </button>
+    </header>
+
+    <!-- NỘI DUNG CHÍNH CỦA TRANG (CÓ THỂ CUỘN BÌNH THƯỜNG) -->
+    <main class="relative z-10 pt-32 pb-20 min-h-screen overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6">
+            <!-- VỀ CHÚNG TÔI -->
+            <div class="max-w-4xl mx-auto mb-20">
+                <div class="text-xs font-mono text-pink-500 mb-4 tracking-[0.3em] uppercase">
+                    Về Chúng Tôi
+                </div>
+                <h1 class="text-5xl md:text-7xl font-bold uppercase font-display mb-12">
+                    Định vị <span class="text-brand-gradient">Sự Khác Biệt</span>
+                </h1>
+
+                <div class="bg-[#111] border border-white/5 rounded-2xl p-8 md:p-12 mb-12 relative overflow-hidden">
+                    <!-- Deco Light -->
+                    <div class="absolute top-0 right-0 w-64 h-64 bg-red-500/10 blur-[100px] rounded-full pointer-events-none"></div>
+
+                    <h2 class="text-3xl font-display text-white mb-6 tracking-wide">Câu Chuyện Của Helios</h2>
+                    <p class="text-gray-300 leading-relaxed mb-6">
+                        Helios Talent TCN được thành lập với mục tiêu trở thành mạng lưới dẫn đầu về sáng tạo nội dung và phát triển tài năng trẻ trên nền tảng TikTok tại Việt Nam. Xuyên suốt hơn 5 năm kinh nghiệm trong lĩnh vực Livestream và truyền thông số, chúng tôi hiểu rõ rào cản lớn nhất của một nhà sáng tạo không phải là thiếu ý tưởng, mà là thiếu một hệ sinh thái hỗ trợ chuyên nghiệp.
+                    </p>
+                    <p class="text-gray-300 leading-relaxed">
+                        Sứ mệnh của chúng tôi là gỡ bỏ rào cản đó. Với Studio chuẩn quốc tế diện tích hơn 500m2 và đội ngũ kỹ thuật lành nghề, chúng tôi biến ý tưởng của bạn thành hình ảnh, biến hình ảnh thành giá trị.
+                    </p>
+                </div>
+
+                <!-- CẬP NHẬT: THÊM HOVER VÀ ONCLICK CHO 2 THẺ -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div onclick="openModal('vision')" class="bg-gradient-to-br from-red-900/20 to-transparent border border-red-500/20 p-8 rounded-2xl group hover:border-red-500/50 transition-all duration-300 cursor-pointer hover:-translate-y-2 hover:shadow-[0_10px_30px_rgba(255,51,51,0.15)] relative">
+                        <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-red-500">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg>
+                        </div>
+                        <h3 class="font-display text-2xl text-red-400 mb-4 uppercase tracking-widest group-hover:text-red-300 transition-colors">Tầm Nhìn</h3>
+                        <p class="text-sm text-gray-400 leading-relaxed">Trở thành MCN TikTok Top 1 tại Việt Nam về mảng Livestream chuyên nghiệp, sở hữu cộng đồng Creator chất lượng cao với doanh thu hàng đầu khu vực.</p>
+                    </div>
+                    
+                    <div onclick="openModal('mission')" class="bg-gradient-to-br from-yellow-900/20 to-transparent border border-yellow-500/20 p-8 rounded-2xl group hover:border-yellow-500/50 transition-all duration-300 cursor-pointer hover:-translate-y-2 hover:shadow-[0_10px_30px_rgba(255,204,0,0.15)] relative">
+                        <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-yellow-500">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg>
+                        </div>
+                        <h3 class="font-display text-2xl text-yellow-400 mb-4 uppercase tracking-widest group-hover:text-yellow-300 transition-colors">Sứ Mệnh</h3>
+                        <p class="text-sm text-gray-400 leading-relaxed">Khai phá, đào tạo và cung cấp hệ sinh thái toàn diện nhất giúp tài năng Việt Nam vươn ra thị trường giải trí thương mại điện tử quốc tế.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ĐỘI NGŨ TÀI NĂNG (TALENT SHOWCASE SLIDER) -->
+            <div class="w-full mt-32 mb-10">
+                <div class="flex flex-col md:flex-row justify-between items-end md:items-center mb-10 gap-6">
+                    <div>
+                        <div class="text-xs font-mono text-gray-500 mb-2 tracking-[0.3em] uppercase">Gương mặt tiêu biểu của năm</div>
+                        <h2 class="text-4xl md:text-5xl font-display uppercase tracking-wide">
+                            Helios <span class="text-brand-gradient drop-shadow-[0_0_15px_rgba(255,20,147,0.3)]">Talent</span>
+                        </h2>
+                    </div>
+                    
+                    <!-- Nút Điều Hướng Slider -->
+                    <div class="flex gap-4">
+                        <button id="prevBtn" class="w-12 h-12 rounded-full border border-gray-700 flex items-center justify-center hover:bg-gradient-to-r hover:from-red-500 hover:to-pink-500 hover:border-transparent hover:text-white transition-all group shadow-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 group-hover:-translate-x-1 transition-transform">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                            </svg>
+                        </button>
+                        <button id="nextBtn" class="w-12 h-12 rounded-full border border-gray-700 flex items-center justify-center hover:bg-gradient-to-r hover:from-pink-500 hover:to-yellow-500 hover:border-transparent hover:text-white transition-all group shadow-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 group-hover:translate-x-1 transition-transform">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Vùng chứa Thanh trượt -->
+                <!-- Chiều rộng mỗi ảnh được tính toán: Điện thoại (1/2), Tablet (1/4), PC (1/6) -->
+                <div id="talent-slider" class="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-8 hide-scrollbar cursor-grab active:cursor-grabbing">
+                    
+                    <!-- Card 1 -->
+                    <div class="snap-start shrink-0 w-[calc(50%-0.5rem)] md:w-[calc(25%-0.75rem)] lg:w-[calc(16.666%-0.833rem)] aspect-[9/16] relative group rounded-xl overflow-hidden border border-white/10">
+                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400&h=700" alt="" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                        <!-- Lớp phủ (Overlay) hiện lên khi hover -->
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-5">
+                            <a href="https://www.tiktok.com/@novix.ht" target="_blank" title="Xem TikTok @nguyen_a" class="self-end transform -translate-y-4 group-hover:translate-y-0 transition-all duration-500 hover:scale-110 z-20">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="w-7 h-7 text-white drop-shadow-[0_0_8px_rgba(255,20,147,0.8)] hover:text-pink-400 transition-colors" fill="currentColor">
+                                    <path d="M448 209.9a210.1 210.1 0 0 1 -122.8-39.3V349.4A162.6 162.6 0 1 1 185 188.3V278.2a74.6 74.6 0 1 0 52.2 71.2V0l88 0a121.2 121.2 0 0 0 1.9 22.2h0A122.2 122.2 0 0 0 381 102.4a121.4 121.4 0 0 0 67 20.1z"/>
+                                </svg>
+                            </a>
+                            <div class="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 pointer-events-none">
+                                <p class="font-display text-brand-gradient text-xl md:text-2xl drop-shadow-[0_0_10px_rgba(255,51,51,0.5)] tracking-wide">@nguyen_a</p>
+                                <p class="text-white font-bold text-base md:text-lg mt-1">Nguyễn Văn A</p>
+                                <div class="flex items-center gap-2 mt-2">
+                                    <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                                    <p class="text-gray-300 text-xs font-mono">Live: 20:00 - 22:00</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 2 -->
+                    <div class="snap-start shrink-0 w-[calc(50%-0.5rem)] md:w-[calc(25%-0.75rem)] lg:w-[calc(16.666%-0.833rem)] aspect-[9/16] relative group rounded-xl overflow-hidden border border-white/10">
+                        <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&q=80&w=400&h=700" alt="" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-5">
+                            <a href="https://www.tiktok.com/@novix.ht" target="_blank" title="Xem TikTok @le_thib" class="self-end transform -translate-y-4 group-hover:translate-y-0 transition-all duration-500 hover:scale-110 z-20">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="w-7 h-7 text-white drop-shadow-[0_0_8px_rgba(255,20,147,0.8)] hover:text-pink-400 transition-colors" fill="currentColor">
+                                    <path d="M448 209.9a210.1 210.1 0 0 1 -122.8-39.3V349.4A162.6 162.6 0 1 1 185 188.3V278.2a74.6 74.6 0 1 0 52.2 71.2V0l88 0a121.2 121.2 0 0 0 1.9 22.2h0A122.2 122.2 0 0 0 381 102.4a121.4 121.4 0 0 0 67 20.1z"/>
+                                </svg>
+                            </a>
+                            <div class="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 pointer-events-none">
+                                <p class="font-display text-brand-gradient text-xl md:text-2xl drop-shadow-[0_0_10px_rgba(255,20,147,0.5)] tracking-wide">@le_thib</p>
+                                <p class="text-white font-bold text-base md:text-lg mt-1">Lê Thị B</p>
+                                <div class="flex items-center gap-2 mt-2">
+                                    <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                                    <p class="text-gray-300 text-xs font-mono">Live: 19:30 - 23:00</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 3 -->
+                    <div class="snap-start shrink-0 w-[calc(50%-0.5rem)] md:w-[calc(25%-0.75rem)] lg:w-[calc(16.666%-0.833rem)] aspect-[9/16] relative group rounded-xl overflow-hidden border border-white/10">
+                        <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=400&h=700" alt="" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-5">
+                            <a href="https://www.tiktok.com/@novix.ht" target="_blank" title="Xem TikTok @hoang_c" class="self-end transform -translate-y-4 group-hover:translate-y-0 transition-all duration-500 hover:scale-110 z-20">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="w-7 h-7 text-white drop-shadow-[0_0_8px_rgba(255,20,147,0.8)] hover:text-pink-400 transition-colors" fill="currentColor">
+                                    <path d="M448 209.9a210.1 210.1 0 0 1 -122.8-39.3V349.4A162.6 162.6 0 1 1 185 188.3V278.2a74.6 74.6 0 1 0 52.2 71.2V0l88 0a121.2 121.2 0 0 0 1.9 22.2h0A122.2 122.2 0 0 0 381 102.4a121.4 121.4 0 0 0 67 20.1z"/>
+                                </svg>
+                            </a>
+                            <div class="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 pointer-events-none">
+                                <p class="font-display text-brand-gradient text-xl md:text-2xl drop-shadow-[0_0_10px_rgba(255,204,0,0.5)] tracking-wide">@hoang_c</p>
+                                <p class="text-white font-bold text-base md:text-lg mt-1">Trần Hoàng C</p>
+                                <div class="flex items-center gap-2 mt-2">
+                                    <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                                    <p class="text-gray-300 text-xs font-mono">Live: 15:00 - 18:00</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 4 -->
+                    <div class="snap-start shrink-0 w-[calc(50%-0.5rem)] md:w-[calc(25%-0.75rem)] lg:w-[calc(16.666%-0.833rem)] aspect-[9/16] relative group rounded-xl overflow-hidden border border-white/10">
+                        <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&q=80&w=400&h=700" alt="" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-5">
+                            <a href="https://www.tiktok.com/@novix.ht" target="_blank" title="Xem TikTok @pham_d" class="self-end transform -translate-y-4 group-hover:translate-y-0 transition-all duration-500 hover:scale-110 z-20">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="w-7 h-7 text-white drop-shadow-[0_0_8px_rgba(255,20,147,0.8)] hover:text-pink-400 transition-colors" fill="currentColor">
+                                    <path d="M448 209.9a210.1 210.1 0 0 1 -122.8-39.3V349.4A162.6 162.6 0 1 1 185 188.3V278.2a74.6 74.6 0 1 0 52.2 71.2V0l88 0a121.2 121.2 0 0 0 1.9 22.2h0A122.2 122.2 0 0 0 381 102.4a121.4 121.4 0 0 0 67 20.1z"/>
+                                </svg>
+                            </a>
+                            <div class="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 pointer-events-none">
+                                <p class="font-display text-brand-gradient text-xl md:text-2xl drop-shadow-[0_0_10px_rgba(255,51,51,0.5)] tracking-wide">@pham_d</p>
+                                <p class="text-white font-bold text-base md:text-lg mt-1">Phạm D</p>
+                                <div class="flex items-center gap-2 mt-2">
+                                    <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                                    <p class="text-gray-300 text-xs font-mono">Live: 21:00 - 00:00</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 5 -->
+                    <div class="snap-start shrink-0 w-[calc(50%-0.5rem)] md:w-[calc(25%-0.75rem)] lg:w-[calc(16.666%-0.833rem)] aspect-[9/16] relative group rounded-xl overflow-hidden border border-white/10">
+                        <img src="https://images.unsplash.com/photo-1488161628813-04466f872507?auto=format&fit=crop&q=80&w=400&h=700" alt="" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-5">
+                            <a href="https://www.tiktok.com/@novix.ht" target="_blank" title="Xem TikTok @nguyen_e" class="self-end transform -translate-y-4 group-hover:translate-y-0 transition-all duration-500 hover:scale-110 z-20">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="w-7 h-7 text-white drop-shadow-[0_0_8px_rgba(255,20,147,0.8)] hover:text-pink-400 transition-colors" fill="currentColor">
+                                    <path d="M448 209.9a210.1 210.1 0 0 1 -122.8-39.3V349.4A162.6 162.6 0 1 1 185 188.3V278.2a74.6 74.6 0 1 0 52.2 71.2V0l88 0a121.2 121.2 0 0 0 1.9 22.2h0A122.2 122.2 0 0 0 381 102.4a121.4 121.4 0 0 0 67 20.1z"/>
+                                </svg>
+                            </a>
+                            <div class="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 pointer-events-none">
+                                <p class="font-display text-brand-gradient text-xl md:text-2xl drop-shadow-[0_0_10px_rgba(255,20,147,0.5)] tracking-wide">@nguyen_e</p>
+                                <p class="text-white font-bold text-base md:text-lg mt-1">Nguyễn E</p>
+                                <div class="flex items-center gap-2 mt-2">
+                                    <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                                    <p class="text-gray-300 text-xs font-mono">Live: 12:00 - 15:00</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 6 -->
+                    <div class="snap-start shrink-0 w-[calc(50%-0.5rem)] md:w-[calc(25%-0.75rem)] lg:w-[calc(16.666%-0.833rem)] aspect-[9/16] relative group rounded-xl overflow-hidden border border-white/10">
+                        <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=400&h=700" alt="" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-5">
+                            <a href="https://www.tiktok.com/@novix.ht" target="_blank" title="Xem TikTok @vu_f" class="self-end transform -translate-y-4 group-hover:translate-y-0 transition-all duration-500 hover:scale-110 z-20">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="w-7 h-7 text-white drop-shadow-[0_0_8px_rgba(255,20,147,0.8)] hover:text-pink-400 transition-colors" fill="currentColor">
+                                    <path d="M448 209.9a210.1 210.1 0 0 1 -122.8-39.3V349.4A162.6 162.6 0 1 1 185 188.3V278.2a74.6 74.6 0 1 0 52.2 71.2V0l88 0a121.2 121.2 0 0 0 1.9 22.2h0A122.2 122.2 0 0 0 381 102.4a121.4 121.4 0 0 0 67 20.1z"/>
+                                </svg>
+                            </a>
+                            <div class="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 pointer-events-none">
+                                <p class="font-display text-brand-gradient text-xl md:text-2xl drop-shadow-[0_0_10px_rgba(255,204,0,0.5)] tracking-wide">@vu_f</p>
+                                <p class="text-white font-bold text-base md:text-lg mt-1">Vũ F</p>
+                                <div class="flex items-center gap-2 mt-2">
+                                    <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                                    <p class="text-gray-300 text-xs font-mono">Live: 08:00 - 11:00</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 7 -->
+                    <div class="snap-start shrink-0 w-[calc(50%-0.5rem)] md:w-[calc(25%-0.75rem)] lg:w-[calc(16.666%-0.833rem)] aspect-[9/16] relative group rounded-xl overflow-hidden border border-white/10">
+                        <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=400&h=700" alt="" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-5">
+                            <a href="https://www.tiktok.com/@novix.ht" target="_blank" title="Xem TikTok @tran_g" class="self-end transform -translate-y-4 group-hover:translate-y-0 transition-all duration-500 hover:scale-110 z-20">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="w-7 h-7 text-white drop-shadow-[0_0_8px_rgba(255,20,147,0.8)] hover:text-pink-400 transition-colors" fill="currentColor">
+                                    <path d="M448 209.9a210.1 210.1 0 0 1 -122.8-39.3V349.4A162.6 162.6 0 1 1 185 188.3V278.2a74.6 74.6 0 1 0 52.2 71.2V0l88 0a121.2 121.2 0 0 0 1.9 22.2h0A122.2 122.2 0 0 0 381 102.4a121.4 121.4 0 0 0 67 20.1z"/>
+                                </svg>
+                            </a>
+                            <div class="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 pointer-events-none">
+                                <p class="font-display text-brand-gradient text-xl md:text-2xl drop-shadow-[0_0_10px_rgba(255,51,51,0.5)] tracking-wide">@tran_g</p>
+                                <p class="text-white font-bold text-base md:text-lg mt-1">Trần G</p>
+                                <div class="flex items-center gap-2 mt-2">
+                                    <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                                    <p class="text-gray-300 text-xs font-mono">Live: 22:00 - 01:00</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 8 -->
+                    <div class="snap-start shrink-0 w-[calc(50%-0.5rem)] md:w-[calc(25%-0.75rem)] lg:w-[calc(16.666%-0.833rem)] aspect-[9/16] relative group rounded-xl overflow-hidden border border-white/10">
+                        <img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&q=80&w=400&h=700" alt="" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-5">
+                            <a href="https://www.tiktok.com/@novix.ht" target="_blank" title="Xem TikTok @ho_h" class="self-end transform -translate-y-4 group-hover:translate-y-0 transition-all duration-500 hover:scale-110 z-20">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="w-7 h-7 text-white drop-shadow-[0_0_8px_rgba(255,20,147,0.8)] hover:text-pink-400 transition-colors" fill="currentColor">
+                                    <path d="M448 209.9a210.1 210.1 0 0 1 -122.8-39.3V349.4A162.6 162.6 0 1 1 185 188.3V278.2a74.6 74.6 0 1 0 52.2 71.2V0l88 0a121.2 121.2 0 0 0 1.9 22.2h0A122.2 122.2 0 0 0 381 102.4a121.4 121.4 0 0 0 67 20.1z"/>
+                                </svg>
+                            </a>
+                            <div class="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 pointer-events-none">
+                                <p class="font-display text-brand-gradient text-xl md:text-2xl drop-shadow-[0_0_10px_rgba(255,20,147,0.5)] tracking-wide">@ho_h</p>
+                                <p class="text-white font-bold text-base md:text-lg mt-1">Hồ H</p>
+                                <div class="flex items-center gap-2 mt-2">
+                                    <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                                    <p class="text-gray-300 text-xs font-mono">Live: 09:00 - 12:00</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 9 -->
+                    <div class="snap-start shrink-0 w-[calc(50%-0.5rem)] md:w-[calc(25%-0.75rem)] lg:w-[calc(16.666%-0.833rem)] aspect-[9/16] relative group rounded-xl overflow-hidden border border-white/10">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400&h=700" alt="" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-5">
+                            <a href="https://www.tiktok.com/@novix.ht" target="_blank" title="Xem TikTok @ngo_i" class="self-end transform -translate-y-4 group-hover:translate-y-0 transition-all duration-500 hover:scale-110 z-20">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="w-7 h-7 text-white drop-shadow-[0_0_8px_rgba(255,20,147,0.8)] hover:text-pink-400 transition-colors" fill="currentColor">
+                                    <path d="M448 209.9a210.1 210.1 0 0 1 -122.8-39.3V349.4A162.6 162.6 0 1 1 185 188.3V278.2a74.6 74.6 0 1 0 52.2 71.2V0l88 0a121.2 121.2 0 0 0 1.9 22.2h0A122.2 122.2 0 0 0 381 102.4a121.4 121.4 0 0 0 67 20.1z"/>
+                                </svg>
+                            </a>
+                            <div class="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 pointer-events-none">
+                                <p class="font-display text-brand-gradient text-xl md:text-2xl drop-shadow-[0_0_10px_rgba(255,204,0,0.5)] tracking-wide">@ngo_i</p>
+                                <p class="text-white font-bold text-base md:text-lg mt-1">Ngô I</p>
+                                <div class="flex items-center gap-2 mt-2">
+                                    <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                                    <p class="text-gray-300 text-xs font-mono">Live: 14:00 - 17:00</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- CẬP NHẬT: Thêm khung SEO Modal Popup -->
+    <div id="seo-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[100] hidden items-center justify-center opacity-0 transition-opacity duration-300 px-4">
+        <div class="bg-[#0a0a0a] border border-white/10 rounded-2xl p-8 md:p-12 max-w-3xl w-full max-h-[85vh] overflow-y-auto relative transform scale-95 transition-transform duration-300 shadow-[0_20px_60px_rgba(0,0,0,0.8)]" id="seo-modal-content">
+            <button onclick="closeModal()" class="absolute top-4 right-4 md:top-6 md:right-6 text-gray-500 hover:text-white transition-colors focus:outline-none">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <h3 id="modal-title" class="text-3xl md:text-5xl font-display mb-6 uppercase text-brand-gradient tracking-wide">Tiêu đề</h3>
+            <div id="modal-body" class="text-gray-300 leading-relaxed space-y-5 font-light text-base md:text-lg">
+                <!-- Nội dung inject bằng JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-900 bg-black py-8 px-6 relative z-20 text-center font-mono text-xs text-gray-600 mt-20">
+        <p>© 2024 HELIOS TALENT TCN. All rights reserved.</p>
+    </footer>
+
+    <!-- Scripts cho Menu, Nền và Slider -->
+    <script>
+        // --- Canvas Background ---
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        const colors = ['#ff3333', '#ff1493', '#ffcc00'];
+
+        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; initParticles(); }
+        function initParticles() {
+            particles = [];
+            const numParticles = Math.floor((canvas.width * canvas.height) / 8000); 
+            for (let i = 0; i < numParticles; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width, y: Math.random() * canvas.height, radius: Math.random() * 2 + 0.5,
+                    color: colors[Math.floor(Math.random() * colors.length)], speedY: Math.random() * 0.5 + 0.1, speedX: (Math.random() - 0.5) * 0.2, opacity: Math.random() * 0.5 + 0.1
+                });
+            }
+        }
+        function drawParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particles.length; i++) {
+                let p = particles[i];
+                ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fillStyle = p.color; ctx.globalAlpha = p.opacity; ctx.fill(); ctx.globalAlpha = 1.0;
+                p.y -= p.speedY; p.x += p.speedX;
+                if (p.y < 0) { p.y = canvas.height; p.x = Math.random() * canvas.width; }
+                if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
+            }
+            requestAnimationFrame(drawParticles);
+        }
+        window.addEventListener('resize', resizeCanvas); resizeCanvas(); drawParticles();
+
+        // --- Menu Logic ---
+        const menuToggle = document.getElementById('menu-toggle');
+        const navMenu = document.getElementById('nav-menu');
+        const menuBackdrop = document.getElementById('menu-backdrop');
+        const line1 = document.getElementById('line-1'), line2 = document.getElementById('line-2'), line3 = document.getElementById('line-3');
+        let isMenuOpen = false;
+
+        function toggleMenu() {
+            isMenuOpen = !isMenuOpen;
+            if (isMenuOpen) {
+                navMenu.classList.remove('translate-x-full'); navMenu.classList.add('translate-x-0');
+                menuBackdrop.classList.remove('opacity-0', 'pointer-events-none'); menuBackdrop.classList.add('opacity-100', 'pointer-events-auto');
+                line1.style.transform = 'translateY(8px) rotate(45deg)'; line2.style.opacity = '0'; line3.style.transform = 'translateY(-8px) rotate(-45deg)';
+                document.body.style.overflow = 'hidden';
+            } else {
+                navMenu.classList.remove('translate-x-0'); navMenu.classList.add('translate-x-full');
+                menuBackdrop.classList.remove('opacity-100', 'pointer-events-auto'); menuBackdrop.classList.add('opacity-0', 'pointer-events-none');
+                line1.style.transform = 'none'; line2.style.opacity = '1'; line3.style.transform = 'none';
+                document.body.style.overflow = '';
+            }
+        }
+        menuToggle.addEventListener('click', toggleMenu);
+        menuBackdrop.addEventListener('click', toggleMenu);
+
+        // --- Talent Slider Logic ---
+        const slider = document.getElementById('talent-slider');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+
+        // Bấm nút cuộn một khoảng bằng đúng độ rộng vùng hiển thị hiện tại
+        nextBtn.addEventListener('click', () => {
+            slider.scrollBy({ left: slider.clientWidth, behavior: 'smooth' });
+        });
+        prevBtn.addEventListener('click', () => {
+            slider.scrollBy({ left: -slider.clientWidth, behavior: 'smooth' });
+        });
+
+        // --- CẬP NHẬT: SEO Modal Logic ---
+        const modalData = {
+            vision: {
+                title: "Tầm Nhìn Chiến Lược",
+                content: `
+                    <p>Mục tiêu lớn nhất của <strong>Helios Talent TCN</strong> là khẳng định vị thế <strong>MCN TikTok Top 1 tại thị trường Việt Nam</strong>, đặc biệt tập trung mũi nhọn vào mảng <strong>Livestream chuyên nghiệp</strong> và thương mại điện tử (E-commerce).</p>
+                    <p>Trong bối cảnh nền kinh tế số bùng nổ, chúng tôi không chỉ dừng lại ở việc quản lý, mà còn hướng tới việc xây dựng một <strong>Cộng đồng Creator chất lượng cao</strong>, có sức ảnh hưởng sâu rộng và mang lại giá trị thực tiễn. Chúng tôi cam kết tạo ra những kỷ lục doanh thu hàng đầu khu vực, đưa các nhà sáng tạo nội dung Việt Nam ngang tầm với các cường quốc giải trí số tại Châu Á.</p>
+                    <p>Tầm nhìn xa của Helios là trở thành cầu nối vững chắc nhất giữa các thương hiệu quốc tế và người tiêu dùng Việt Nam thông qua những phiên Mega Livestream hàng triệu lượt xem, định hình lại chuẩn mực của ngành công nghiệp Livestream trên nền tảng TikTok.</p>
+                `
+            },
+            mission: {
+                title: "Sứ Mệnh Của Chúng Tôi",
+                content: `
+                    <p>Sứ mệnh cốt lõi của <strong>Helios Talent TCN</strong> là <strong>Khai phá, Đào tạo và Nâng tầm</strong> những "viên ngọc thô" trong làng sáng tạo nội dung Việt.</p>
+                    <p>Chúng tôi cung cấp một <strong>Hệ sinh thái toàn diện nhất</strong> bao gồm: Không gian Studio đạt chuẩn quốc tế rộng hơn 500m2, thiết bị quay dựng/livestream điện ảnh, đội ngũ kỹ thuật viên ánh sáng, âm thanh chuyên môn cao, cùng với các chuyên gia phân tích thuật toán và hoạch định kịch bản xuất sắc.</p>
+                    <p>Không chỉ là bệ phóng tài năng, sứ mệnh của chúng tôi là trang bị cho Creators tư duy kinh doanh nhạy bén, kỹ năng xây dựng thương hiệu cá nhân bền vững, giúp tài năng Việt Nam tự tin <strong>vươn ra thị trường giải trí thương mại điện tử quốc tế</strong>. Tại Helios, mọi ý tưởng đều được chắp cánh để tỏa sáng theo cách rực rỡ nhất.</p>
+                `
+            }
+        };
+
+        const seoModal = document.getElementById('seo-modal');
+        const seoModalContent = document.getElementById('seo-modal-content');
+        const modalTitle = document.getElementById('modal-title');
+        const modalBody = document.getElementById('modal-body');
+
+        function openModal(type) {
+            // Thay đổi nội dung
+            modalTitle.innerHTML = modalData[type].title;
+            modalBody.innerHTML = modalData[type].content;
+            
+            // Xóa class hidden để div hiển thị dạng flex
+            seoModal.classList.remove('hidden');
+            seoModal.classList.add('flex');
+            
+            // Ép trình duyệt reflow để animation opacity hoạt động
+            void seoModal.offsetWidth;
+            
+            // Bật hiệu ứng mượt
+            seoModal.classList.remove('opacity-0');
+            seoModalContent.classList.remove('scale-95');
+            seoModalContent.classList.add('scale-100');
+            
+            // Khóa cuộn màn hình nền
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            // Chạy animation thu nhỏ và mờ
+            seoModal.classList.add('opacity-0');
+            seoModalContent.classList.remove('scale-100');
+            seoModalContent.classList.add('scale-95');
+            
+            // Đợi animation hoàn thành (300ms) rồi mới ẩn hẳn
+            setTimeout(() => {
+                seoModal.classList.add('hidden');
+                seoModal.classList.remove('flex');
+                document.body.style.overflow = '';
+            }, 300);
+        }
+
+        // Đóng modal khi click ra lớp nền mờ bên ngoài
+        seoModal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
